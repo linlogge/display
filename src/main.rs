@@ -1,30 +1,66 @@
+use std::thread;
+use std::time::Duration;
+
+use serde_json::json;
+
+mod http;
+
 slint::include_modules!();
 
-pub fn main() {
-    // This provides better error messages in debug mode.
-    // It's disabled in release mode so it doesn't bloat up the file size.
-    #[cfg(all(debug_assertions, target_arch = "wasm32"))]
-    console_error_panic_hook::set_once();
+#[derive(Debug)]
+struct SongInfo {
+    pub title: String,
+    pub artist: String,
+    pub album: String,
+}
 
+pub fn main() {
     let main_window = MainWindow::new();
 
     let main_weak = main_window.as_weak();
 
-    let _thread = std::thread::spawn(move || {
-        let mut value: f32 = 0.0;
+    thread::spawn(move || {
+        let runtime = tokio::runtime::Runtime::new().unwrap();
 
-        loop {
-            let main_window_copy = main_weak.clone();
+        runtime.block_on(async {
+            loop {
+                let main_window_copy = main_weak.clone();
 
-            std::thread::sleep(std::time::Duration::from_millis(1000));
+                thread::sleep(Duration::from_millis(1000));
 
-            value += 1.0;
+                let req = json!({
+                  "Media_Obj": "ActiveInput",
+                  "Method": "ActiveInputCmd",
+                  "Parameters": {
+                    "AudioGetInfo": {"Method": "GetCurrentSongInfo"}
+                  }
+                });
 
-            slint::invoke_from_event_loop(move || {
-                main_window_copy.unwrap().global::<Logic>().set_value(value)
-            })
-            .unwrap();
-        }
+                let res = http::get(req).await.unwrap();
+
+                let song_dictionary = &res["SongDictionary"];
+
+                let song_info = SongInfo {
+                    title: song_dictionary["Title"].as_str().unwrap().to_string(),
+                    artist: song_dictionary["Artist"].as_str().unwrap().to_string(),
+                    album: song_dictionary["Album"].as_str().unwrap().to_string(),
+                };
+
+                println!("{:?}", song_info);
+
+                slint::invoke_from_event_loop(move || {
+                    main_window_copy
+                        .unwrap()
+                        .global::<Logic>()
+                        .set_title(song_info.title.into());
+                    main_window_copy
+                        .unwrap()
+                        .global::<Logic>()
+                        .set_artist(song_info.artist.into());
+                })
+                .unwrap();
+            }
+        });
     });
 
     main_window.run();

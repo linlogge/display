@@ -3,10 +3,12 @@ import { ProgressSlider } from "./slider.slint";
 export global Logic := {
     callback value-changed(float);
     property <float> value: 0;
+    property <string> title: "...Loading";
+    property <string> artist: "...Loading";
 }
 
 MainWindow := Window {
-    title: "Display";
+    title: Logic.title;
     height: 480px;
     width: 800px;
     background: black;
@@ -55,7 +57,7 @@ MainWindow := Window {
             VerticalLayout { 
 
                 Text { 
-                    text: "Artist";
+                    text: Logic.title;
                     color: white;
                     font-size: 30px;
                     font-weight: 400;
@@ -67,7 +69,7 @@ MainWindow := Window {
                 }
 
                 Text { 
-                    text: "Artist";
+                    text: Logic.artist;
                     color: white;
                     font-size: 30px;
                     font-weight: 400;
