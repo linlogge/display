@@ -1,0 +1,15 @@
+[package]
+name = "display"
+version = "0.1.0"
+edition = "2021"
+build = "src/build.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "display"
+
+[dependencies]
+slint = "0.3.2"
+
+[build-dependencies]
+slint-build = "0.3.2"

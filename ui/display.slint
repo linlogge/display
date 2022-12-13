@@ -1,0 +1,146 @@
+import { ProgressSlider } from "./slider.slint";
+
+export global Logic := {
+    callback value-changed(float);
+    property <float> value: 0;
+}
+
+MainWindow := Window {
+    title: "Display";
+    height: 480px;
+    width: 800px;
+    background: black;
+
+    main-window := VerticalLayout {
+        padding-left: 36px;
+        padding-right: 36px;
+        padding-top: 52px;
+        padding-bottom: 52px;
+        alignment: space-between;
+        
+        HorizontalLayout { 
+            alignment: space-between;
+
+            Image {
+                width: 50px;
+                height: 50px;
+                source: @image-url("icons/repeat-all.svg");
+                colorize: white;
+            }
+
+            Image {
+                width: 60px;
+                height: 60px;
+                source: @image-url("icons/tidal.svg");
+                colorize: white;
+            }
+
+            Rectangle {
+                width: 50px;
+            }
+        }
+
+        VerticalLayout {
+            HorizontalLayout { 
+                alignment: end;
+
+                Image {
+                    width: 40px;
+                    height: 40px;
+                    source: @image-url("icons/pause.svg");
+                    colorize: white;
+                }
+            }
+
+            VerticalLayout { 
+
+                Text { 
+                    text: "Artist";
+                    color: white;
+                    font-size: 30px;
+                    font-weight: 400;
+                    horizontal-alignment: center;
+                }
+
+                Rectangle { 
+                    height: 5px;
+                }
+
+                Text { 
+                    text: "Artist";
+                    color: white;
+                    font-size: 30px;
+                    font-weight: 400;
+                    horizontal-alignment: center;
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 40px;
+    
+                Image {
+                    width: 50px;
+                    height: 50px;
+                    source: @image-url("icons/skip-backward.svg");
+                    colorize: white;
+                }
+    
+                VerticalLayout {
+    
+                    Rectangle { 
+                        height: 20px;
+                    }
+                    
+                    progress-slider := ProgressSlider {
+                        height: 20px;
+                        maximum: 100;
+                        value: Logic.value;
+                        value-changed(value) => {
+                            Logic.value-changed(value);
+                        }
+                    }
+
+                    Rectangle { 
+                        height: 10px;
+                    }
+
+                    HorizontalLayout { 
+                        alignment: space-between;
+
+                        Text { 
+                            text: "0:00";
+                            color: white;
+                            font-size: 20px;
+                            font-weight: 400;
+                        }
+
+                        Text { 
+                            text: "0:00";
+                            color: white;
+                            font-size: 20px;
+                            font-weight: 400;
+                        }
+                    }
+                }
+    
+                Image {
+                    width: 50px;
+                    height: 50px;
+                    source: @image-url("icons/skip-forward.svg");
+                    colorize: white;
+                }
+            }
+        }
+
+        HorizontalLayout { 
+            alignment: space-between;
+
+            Image {
+                width: 50px;
+                height: 50px;
+                source: @image-url("icons/shuffle.svg");
+                colorize: white;
+            }
+        }
+    }
+}
